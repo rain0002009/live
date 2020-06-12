@@ -1,9 +1,5 @@
 export default {
   mode: 'universal',
-  server: {
-    port: 3001,
-    host: '0.0.0.0'
-  },
   purgeCSS: {
     mode: 'postcss',
     whitelistPatterns: [/^ant\w*/, /^van-\w*/],
