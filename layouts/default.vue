@@ -10,8 +10,11 @@ export default {
 }
 </script>
 <style lang="scss">
-#app {
-  background-color: #f7f8fa;
-  height: 100vh;
-}
+  body {
+    background-color: #f7f8fa;
+  }
+
+  #app {
+    height: 100vh;
+  }
 </style>

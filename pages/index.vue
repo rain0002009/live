@@ -1,5 +1,16 @@
 <template>
   <div class="page-home">
+    <div class="setting-wrap mt-5 px-5">
+      <a-switch v-model="isUseVlcPlayer" />
+      <span v-if="isUseVlcPlayer">使用vlc播放器（自行安装）</span>
+      <template v-else>
+        <span>内置播放器需要服务器支持</span>
+        <div class="mt-3">
+          <a-input v-model="serverPath" />
+        </div>
+      </template>
+    </div>
+    <a-divider />
     <a-row>
       <a-col class="platform-item mt-5" :span="8">
         <nuxt-link class="block" :to="{name: 'favorite-anchor'}">
@@ -26,31 +37,50 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { NuxtAxiosInstance } from '@nuxtjs/axios'
+import { defineComponent, computed } from '@vue/composition-api'
 import { getPlatformInfo } from '@/api'
 import favorite from '@/assets/img/f-favorites.png'
 
 export default defineComponent({
-  data () {
-    return { favorite }
-  },
-  async asyncData ({ $axios }) {
+  async asyncData ({ $axios }: { $axios: NuxtAxiosInstance }) {
     const data = await getPlatformInfo($axios)
     return { data }
+  },
+  setup (_props, { root }) {
+    const isUseVlcPlayer = computed({
+      get () {
+        return root.$store.state.setting.isUseVlcPlayer
+      },
+      set (data: boolean) {
+        root.$store.commit('editSetting', { isUseVlcPlayer: data })
+      }
+    })
+
+    const serverPath = computed({
+      get () {
+        return root.$store.state.setting.serverPath
+      },
+      set (data: string) {
+        root.$store.commit('editSetting', { serverPath: data })
+      }
+    })
+
+    return { favorite, isUseVlcPlayer, serverPath }
   }
 })
 </script>
 
 <style lang="scss">
-.page-home {
-  .platform-item {
+  .page-home {
+    .platform-item {
 
-  }
+    }
 
-  .platform-avatar {
-    height: 0;
-    padding-bottom: 56%;
-    width: 56%;
+    .platform-avatar {
+      height: 0;
+      padding-bottom: 56%;
+      width: 56%;
+    }
   }
-}
 </style>

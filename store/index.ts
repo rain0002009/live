@@ -3,15 +3,16 @@ import { message } from 'ant-design-vue'
 import { AnchorList, Anchor } from '~/api'
 
 interface State {
+  setting: { isUseVlcPlayer: boolean, serverPath: string }
   favoriteAnchor: { [key: string]: AnchorList }
   garbageAnchor: { [key: string]: AnchorList }
 }
 
-export const state = () => {
-  return { favoriteAnchor: {}, garbageAnchor: {} }
+export const state:()=>State = () => {
+  return { favoriteAnchor: {}, garbageAnchor: {}, setting: { isUseVlcPlayer: true, serverPath: 'http://192.168.2.1:3000/live/' } }
 }
 
-function push (which: keyof State, state: State, { platform, anchor }: { platform: string, anchor: Anchor }) {
+function push (which: keyof Omit<State, 'setting'>, state: State, { platform, anchor }: { platform: string, anchor: Anchor }) {
   const store = state[which]
   const anchorList = Reflect.get(store, platform)
   if (Reflect.has(store, platform)) {
@@ -35,5 +36,8 @@ function push (which: keyof State, state: State, { platform, anchor }: { platfor
 
 export const mutations = {
   pushFavoriteAnchor: partial(push, 'favoriteAnchor'),
-  pushGarbageAnchor: partial(push, 'garbageAnchor')
+  pushGarbageAnchor: partial(push, 'garbageAnchor'),
+  editSetting (state: State, data: State['setting']) {
+    Object.assign(state.setting, data)
+  }
 }

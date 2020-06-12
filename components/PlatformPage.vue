@@ -104,9 +104,19 @@ export default defineComponent({
       })
     }
 
-    function start (item: {}) {
-      data.playerDrawerVisible = true
-      data.selectedItem = item
+    function start (item: Anchor) {
+      const iOS = navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)
+      if (root.$store.state.setting.isUseVlcPlayer) {
+        const address = encodeURIComponent(item.address)
+        if (iOS) {
+          location.href = `vlc-x-callback://x-callback-url/stream?url=${ address }`
+        } else {
+          location.href = `vlc://${ item.address }`
+        }
+      } else {
+        data.playerDrawerVisible = true
+        data.selectedItem = item
+      }
     }
 
     function onDrawerClose () {
@@ -116,7 +126,7 @@ export default defineComponent({
     function getVideoSrc (src: string) {
       const encodeSrc = encodeURIComponent(src)
       const fileName = path.basename(new URL(src).pathname.replace('.flv', ''))
-      const mediaPath = process.env.mediaPath || 'http://192.168.2.1:3000/live/'
+      const mediaPath = root.$store.state.setting.serverPath || 'http://192.168.2.1:3000/live/'
       return `${ mediaPath }${ fileName }.flv?name=${ fileName }&url=${ encodeSrc }`
     }
 
