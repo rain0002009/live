@@ -1,13 +1,15 @@
 <template>
-  <div id="app">
-    <nuxt />
+  <div id="app" class="mx-auto">
+    <nuxt keep-alive :keep-alive-props="{include: ['Index']}" />
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from '@vue/composition-api'
+
+export default defineComponent({
   name: 'App'
-}
+})
 </script>
 <style lang="scss">
   body {
@@ -16,5 +18,6 @@ export default {
 
   #app {
     height: 100vh;
+    max-width: 768px;
   }
 </style>

@@ -37,15 +37,21 @@
 </template>
 
 <script lang="ts">
-import { NuxtAxiosInstance } from '@nuxtjs/axios'
+import { Context } from '@nuxt/types'
 import { defineComponent, computed } from '@vue/composition-api'
 import { getPlatformInfo } from '@/api'
 import favorite from '@/assets/img/f-favorites.png'
 
 export default defineComponent({
-  async asyncData ({ $axios }: { $axios: NuxtAxiosInstance }) {
-    const data = await getPlatformInfo($axios)
-    return { data }
+  name: 'Index',
+  async asyncData ({ $axios, store }: Context) {
+    if (store.state.indexData.length) {
+      return { data: store.state.indexData }
+    } else {
+      const data = await getPlatformInfo($axios)
+      store.commit('editIndexData', data)
+      return { data }
+    }
   },
   setup (_props, { root }) {
     const isUseVlcPlayer = computed({

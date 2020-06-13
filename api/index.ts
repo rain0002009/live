@@ -1,4 +1,3 @@
-import { VueConstructor } from 'vue'
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
 
 export interface PlatformItem {
@@ -14,8 +13,21 @@ export function getPlatformInfo (axios: NuxtAxiosInstance) {
   return axios.get('/json.txt').then(({ data }: { data: { pingtai: PlatformList } }) => Object.freeze(data.pingtai))
 }
 
-export type Anchor = Pick<PlatformItem, 'address' | 'title'> & { img: string, isFavoriteAnchor: boolean, weight: number }
+export type Anchor =
+  Pick<PlatformItem, 'address' | 'title'>
+  & { img: string, isFavoriteAnchor: boolean, weight: number }
 export type AnchorList = Anchor[]
+
+function decode (text: string) {
+  let out = ''
+  const table = Object.entries({
+    '%B7': '·'
+  })
+  for (const [key, value] of table) {
+    out = text.replace(new RegExp(key, 'g'), value)
+  }
+  return out
+}
 
 export function getAnchorList (axios: NuxtAxiosInstance, src: string) {
   return axios.get(`/${ src }`).then(({ data }: { data: { zhubo: AnchorList } }) => {
@@ -29,11 +41,12 @@ export function getAnchorList (axios: NuxtAxiosInstance, src: string) {
         return true
       })
       .map((item: any, index) => {
+        item.weight = index
+        item.isFavoriteAnchor = false
         try {
-          item.weight = index
-          item.isFavoriteAnchor = false
           item.title = decodeURIComponent(item.title)
         } catch {
+          item.title = decodeURIComponent(decode(item.title))
         }
         return item
       })

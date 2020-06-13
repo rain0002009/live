@@ -83,15 +83,19 @@ export default defineComponent({
       const tem = await getAnchorList(root.$axios, root.$route.query.address as string)
       anchorList.value = tem
         .map((item) => {
+          const garbageAnchorList = root.$store.state.garbageAnchor[props.platformName || root.$route.query.title as string]
           const currentAnchorList = root.$store.state.favoriteAnchor[props.platformName || root.$route.query.title as string]
           if (currentAnchorList) {
             const isFindItem = !!~findIndex(currentAnchorList, ['address', item.address])
             Reflect.set(item, 'isFavoriteAnchor', isFindItem)
+          } else {
+            Reflect.set(item, 'isFavoriteAnchor', false)
+          }
+          if (garbageAnchorList) {
+            const isFindItem = !!~findIndex(garbageAnchorList, ['address', item.address])
             if (isFindItem) {
               item.weight += tem.length
             }
-          } else {
-            Reflect.set(item, 'isFavoriteAnchor', false)
           }
           return item
         })
@@ -176,33 +180,33 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.page-platform-info {
-  .anchor-avatar {
-    height: 160px;
-    object-fit: cover;
-    overflow: hidden;
-  }
+  .page-platform-info {
+    .anchor-avatar {
+      height: 160px;
+      object-fit: cover;
+      overflow: hidden;
+    }
 
-  .control-wrap {
-    padding: 0 15px;
+    .control-wrap {
+      padding: 0 15px;
 
-    .anticon {
-      padding: 10px;
+      .anticon {
+        padding: 10px;
+      }
     }
   }
-}
 
-.player-drawer {
-  height: 100vh;
+  .player-drawer {
+    height: 100vh;
 
-  .ant-drawer-wrapper-body {
-    display: flex;
-    flex-direction: column;
+    .ant-drawer-wrapper-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ant-drawer-body {
+      padding: 0;
+      flex: 1;
+    }
   }
-
-  .ant-drawer-body {
-    padding: 0;
-    flex: 1;
-  }
-}
 </style>

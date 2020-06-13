@@ -1,18 +1,24 @@
 import { findIndex, partial } from 'lodash'
 import { message } from 'ant-design-vue'
-import { AnchorList, Anchor } from '~/api'
+import { AnchorList, Anchor, PlatformList } from '~/api'
 
 interface State {
+  indexData: PlatformList
   setting: { isUseVlcPlayer: boolean, serverPath: string }
   favoriteAnchor: { [key: string]: AnchorList }
   garbageAnchor: { [key: string]: AnchorList }
 }
 
-export const state:()=>State = () => {
-  return { favoriteAnchor: {}, garbageAnchor: {}, setting: { isUseVlcPlayer: true, serverPath: 'http://192.168.2.1:3000/live/' } }
+export const state: () => State = () => {
+  return {
+    indexData: [],
+    favoriteAnchor: {},
+    garbageAnchor: {},
+    setting: { isUseVlcPlayer: true, serverPath: 'http://192.168.2.1:3000/live/' }
+  }
 }
 
-function push (which: keyof Omit<State, 'setting'>, state: State, { platform, anchor }: { platform: string, anchor: Anchor }) {
+function push (which: keyof Pick<State, 'favoriteAnchor' | 'garbageAnchor'>, state: State, { platform, anchor }: { platform: string, anchor: Anchor }) {
   const store = state[which]
   const anchorList = Reflect.get(store, platform)
   if (Reflect.has(store, platform)) {
@@ -39,5 +45,8 @@ export const mutations = {
   pushGarbageAnchor: partial(push, 'garbageAnchor'),
   editSetting (state: State, data: State['setting']) {
     Object.assign(state.setting, data)
+  },
+  editIndexData (state: State, data: PlatformList) {
+    Object.assign(state.indexData, data)
   }
 }

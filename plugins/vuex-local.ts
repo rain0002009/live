@@ -3,7 +3,8 @@ import createPersistedState from 'vuex-persistedstate'
 
 const myModule: Module = function ({ store }) {
   createPersistedState({
-    key: 'live'
+    key: 'live',
+    paths: ['favoriteAnchor', 'setting', 'garbageAnchor']
   })(store)
 }
 
