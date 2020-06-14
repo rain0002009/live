@@ -96,7 +96,9 @@ export default {
   */
   build: {
     transpile: [/^ant-design-vue/, /^vant/],
-    plugins: [new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), new LodashModuleReplacementPlugin()],
+    plugins: [new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), new LodashModuleReplacementPlugin({
+      shorthands: true
+    })],
     loaders: {
       less: {
         lessOptions: {

@@ -140,8 +140,16 @@ export default defineComponent({
       root.$router.back()
     }
 
+    /**
+     * 添加到我的最爱
+     * @param item
+     */
     function addToFavorite (item: Anchor) {
-      item.isFavoriteAnchor = !item.isFavoriteAnchor
+      if (!props.list) {
+        item.isFavoriteAnchor = !item.isFavoriteAnchor
+      } else {
+        item = Object.assign({}, item, { isFavoriteAnchor: !item.isFavoriteAnchor })
+      }
       root.$store.commit('pushFavoriteAnchor', {
         platform: root.$route.query.title as string || props.platformName,
         anchor: item
