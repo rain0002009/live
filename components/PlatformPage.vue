@@ -80,7 +80,9 @@ export default defineComponent({
         anchorList.value = props.list
         return false
       }
+      root.$spin.open()
       const tem = await getAnchorList(root.$axios, root.$route.query.address as string)
+      root.$spin.close()
       anchorList.value = tem
         .map((item) => {
           const garbageAnchorList = root.$store.state.garbageAnchor[props.platformName || root.$route.query.title as string]

@@ -47,24 +47,32 @@ import favorite from '@/assets/img/f-favorites.png'
 export default defineComponent({
   name: 'Index',
   setup () {
+    let getPlatformInfoPromise: Promise<PlatformList>
     const { store, $axios } = useContext()
     const data = useAsync(async () => {
       if (store.state.indexData.length) {
         return store.state.indexData
       } else {
-        return await getPlatformInfo($axios).then((res) => {
+        getPlatformInfoPromise = getPlatformInfo($axios).then((res) => {
           store.commit('editIndexData', res)
+          if (process.client) {
+            data.value = res
+          }
           return res
         })
+        return await getPlatformInfoPromise
       }
     })
     let currentIndex = 0
     const loading = ref(false)
     const finished = ref(false)
     const list = ref<PlatformList>([])
-    const dataChunk = chunk<PlatformList>(data.value, 21)
 
-    function load () {
+    async function load () {
+      if (!data.value) {
+        await getPlatformInfoPromise
+      }
+      const dataChunk = chunk<PlatformList | any>(data.value, 21)
       loading.value = true
       setTimeout(() => {
         list.value = list.value.concat(...dataChunk[currentIndex])
@@ -73,7 +81,7 @@ export default defineComponent({
         if (currentIndex >= dataChunk.length) {
           finished.value = true
         }
-      }, 2000)
+      }, currentIndex === 0 ? 0 : 2000)
     }
 
     const isUseVlcPlayer = computed({

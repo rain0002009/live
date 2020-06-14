@@ -42,7 +42,7 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    { src: '@/plugins/compositionApi' },
+    { src: '@/plugins/loading' },
     { src: '@/plugins/antd-ui' },
     { src: '@/plugins/globleComponent' },
     { src: '@/plugins/vuex-local', mode: 'client' },
