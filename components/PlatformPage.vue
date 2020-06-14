@@ -60,7 +60,7 @@
 <script lang="ts">
 import path from 'path-browserify'
 import { findIndex } from 'lodash'
-import { defineComponent, reactive, ref, watchEffect } from '@vue/composition-api'
+import { defineComponent, reactive, ref, watchEffect } from 'nuxt-composition-api'
 import { getAnchorList, AnchorList, Anchor } from '@/api'
 
 export default defineComponent({

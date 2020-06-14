@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { message } from 'ant-design-vue'
-import { defineComponent, computed, onMounted, ref, onUnmounted } from '@vue/composition-api'
+import { defineComponent, computed, onMounted, ref, onUnmounted } from 'nuxt-composition-api'
 import flvjs from 'flv.js'
 
 flvjs.LoggingControl.enableError = true

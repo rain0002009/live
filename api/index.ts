@@ -9,8 +9,12 @@ export interface PlatformItem {
 
 export type PlatformList = PlatformItem[]
 
+/**
+ * 获得平台列表
+ * @param axios
+ */
 export function getPlatformInfo (axios: NuxtAxiosInstance) {
-  return axios.get('/json.txt').then(({ data }: { data: { pingtai: PlatformList } }) => Object.freeze(data.pingtai))
+  return axios.get('/json.txt').then(({ data }: { data: { pingtai: PlatformList } }) => data.pingtai)
 }
 
 export type Anchor =
@@ -29,6 +33,11 @@ function decode (text: string) {
   return out
 }
 
+/**
+ * 获得某平台主播列表
+ * @param axios
+ * @param src
+ */
 export function getAnchorList (axios: NuxtAxiosInstance, src: string) {
   return axios.get(`/${ src }`).then(({ data }: { data: { zhubo: AnchorList } }) => {
     const hash = new Map()

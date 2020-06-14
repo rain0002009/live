@@ -11,68 +11,90 @@
       </template>
     </div>
     <a-divider />
-    <a-row>
-      <a-col class="platform-item mt-5" :span="8">
-        <nuxt-link class="block" :to="{name: 'favorite-anchor'}">
-          <a-badge class="m-auto block platform-avatar relative" :count="0">
-            <div class="absolute top-0 right-0 bottom-0 left-0">
-              <x-img :src="favorite" class="object-contain w-full h-full" />
-            </div>
-          </a-badge>
-          <figcaption class="text-center text-gray-600 text-sm" v-text="'我的最爱'" />
-        </nuxt-link>
-      </a-col>
-      <a-col v-for="item in data" :key="item.title" class="platform-item mt-5" :span="8">
-        <nuxt-link class="block" :to="{name: 'platform', query: {address: item.address, title: item.title}}">
-          <a-badge class="m-auto block platform-avatar relative" :count="item.Number">
-            <div class="absolute top-0 right-0 bottom-0 left-0">
-              <x-img class="object-contain w-full h-full" :src="item.xinimg" :lazy="true" />
-            </div>
-          </a-badge>
-          <figcaption class="text-center text-gray-600 text-sm" v-text="item.title" />
-        </nuxt-link>
-      </a-col>
-    </a-row>
+    <van-list v-model="loading" :finished="finished" @load="load">
+      <a-row>
+        <a-col class="platform-item mt-5" :span="8">
+          <nuxt-link class="block" :to="{name: 'favorite-anchor'}">
+            <a-badge class="m-auto block platform-avatar relative" :count="0">
+              <div class="absolute top-0 right-0 bottom-0 left-0">
+                <x-img :src="favorite" class="object-contain w-full h-full" />
+              </div>
+            </a-badge>
+            <figcaption class="text-center text-gray-600 text-sm" v-text="'我的最爱'" />
+          </nuxt-link>
+        </a-col>
+        <a-col v-for="item in list" :key="item.title" class="platform-item mt-5" :span="8">
+          <nuxt-link class="block" :to="{name: 'platform', query: {address: item.address, title: item.title}}">
+            <a-badge class="m-auto block platform-avatar relative" :count="item.Number">
+              <div class="absolute top-0 right-0 bottom-0 left-0">
+                <x-img class="object-contain w-full h-full" :src="item.xinimg" :lazy="true" />
+              </div>
+            </a-badge>
+            <figcaption class="text-center text-gray-600 text-sm" v-text="item.title" />
+          </nuxt-link>
+        </a-col>
+      </a-row>
+    </van-list>
   </div>
 </template>
 
 <script lang="ts">
-import { Context } from '@nuxt/types'
-import { defineComponent, computed } from '@vue/composition-api'
-import { getPlatformInfo } from '@/api'
+import { chunk } from 'lodash'
+import { defineComponent, computed, useAsync, useContext, ref } from 'nuxt-composition-api'
+import { getPlatformInfo, PlatformList } from '@/api'
 import favorite from '@/assets/img/f-favorites.png'
 
 export default defineComponent({
   name: 'Index',
-  async asyncData ({ $axios, store }: Context) {
-    if (store.state.indexData.length) {
-      return { data: store.state.indexData }
-    } else {
-      const data = await getPlatformInfo($axios)
-      store.commit('editIndexData', data)
-      return { data }
+  setup () {
+    const { store, $axios } = useContext()
+    const data = useAsync(async () => {
+      if (store.state.indexData.length) {
+        return store.state.indexData
+      } else {
+        return await getPlatformInfo($axios).then((res) => {
+          store.commit('editIndexData', res)
+          return res
+        })
+      }
+    })
+    let currentIndex = 0
+    const loading = ref(false)
+    const finished = ref(false)
+    const list = ref<PlatformList>([])
+    const dataChunk = chunk<PlatformList>(data.value, 21)
+
+    function load () {
+      loading.value = true
+      setTimeout(() => {
+        list.value = list.value.concat(...dataChunk[currentIndex])
+        loading.value = false
+        currentIndex += 1
+        if (currentIndex >= dataChunk.length) {
+          finished.value = true
+        }
+      }, 2000)
     }
-  },
-  setup (_props, { root }) {
+
     const isUseVlcPlayer = computed({
       get () {
-        return root.$store.state.setting.isUseVlcPlayer
+        return store.state.setting.isUseVlcPlayer
       },
       set (data: boolean) {
-        root.$store.commit('editSetting', { isUseVlcPlayer: data })
+        store.commit('editSetting', { isUseVlcPlayer: data })
       }
     })
 
     const serverPath = computed({
       get () {
-        return root.$store.state.setting.serverPath
+        return store.state.setting.serverPath
       },
       set (data: string) {
-        root.$store.commit('editSetting', { serverPath: data })
+        store.commit('editSetting', { serverPath: data })
       }
     })
 
-    return { favorite, isUseVlcPlayer, serverPath }
+    return { favorite, isUseVlcPlayer, serverPath, list, load, finished, loading }
   }
 })
 </script>
