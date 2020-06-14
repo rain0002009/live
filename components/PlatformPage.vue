@@ -33,7 +33,7 @@
             />
           </div>
           <x-img class="m-auto anchor-avatar w-full" :src="item.img" :lazy="true" />
-          <figcaption class="text-center text-gray-600 text-sm" v-text="item.title" />
+          <figcaption class="text-center text-gray-600 text-sm truncate" v-text="item.title" />
         </figure>
       </a-col>
     </a-row>

@@ -1,3 +1,7 @@
 export default function () {
-  this.options.css.unshift('ant-design-vue/dist/antd.less')
+  const antdStyle = ['', '/grid', '/badge', '/drawer', '/icon', '/empty', '/divider', '/switch', '/input'].map((item) => {
+    item = 'ant-design-vue/es' + item + '/style/index.less'
+    return item
+  })
+  this.options.css = [...antdStyle, ...this.options.css]
 }

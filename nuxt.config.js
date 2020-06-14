@@ -1,3 +1,7 @@
+import path from 'path'
+import webpack from 'webpack'
+import LodashModuleReplacementPlugin from 'lodash-webpack-plugin'
+
 export default {
   mode: 'universal',
   purgeCSS: {
@@ -45,7 +49,10 @@ export default {
     { src: '@/plugins/loading' },
     { src: '@/plugins/antd-ui' },
     { src: '@/plugins/globleComponent' },
-    { src: '@/plugins/vuex-local', mode: 'client' },
+    {
+      src: '@/plugins/vuex-local',
+      mode: 'client'
+    },
     {
       src: '@/plugins/flv',
       mode: 'client'
@@ -89,6 +96,7 @@ export default {
   */
   build: {
     transpile: [/^ant-design-vue/, /^vant/],
+    plugins: [new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), new LodashModuleReplacementPlugin()],
     loaders: {
       less: {
         lessOptions: {
@@ -97,19 +105,16 @@ export default {
       }
     },
     babel: {
+      plugins: ['lodash'],
       babelrc: false,
       cacheDirectory: undefined,
-      presets: ['@nuxt/babel-preset-app'],
-      plugins: [
-        ['import', {
-          libraryName: 'ant-design-vue'
-        }, 'ant-design-vue']
-      ]
+      presets: ['@nuxt/babel-preset-app']
     },
     /*
     ** You can extend webpack config here
     */
-    extend () {
+    extend (config) {
+      config.resolve.alias['@ant-design/icons/lib/dist$'] = path.resolve(__dirname, './plugins/antd-icons.ts')
     }
   }
 }

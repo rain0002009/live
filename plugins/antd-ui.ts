@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Row, Col, Badge, Drawer, Icon, Empty, Divider, Switch, Input, Button } from 'ant-design-vue'
+import { Row, Col, Badge, Drawer, Icon, Empty, Divider, Switch, Input } from 'ant-design-vue'
 Vue.config.productionTip = false
 
 Vue.component(Row.name, Row)
@@ -11,4 +11,3 @@ Vue.component(Empty.name, Empty)
 Vue.component(Divider.name, Divider)
 Vue.component(Switch.name, Switch)
 Vue.component(Input.name, Input)
-Vue.component(Button.name, Button)
