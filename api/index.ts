@@ -25,7 +25,9 @@ export type AnchorList = Anchor[]
 function decode (text: string) {
   let out = ''
   const table = Object.entries({
-    '%B7': '·'
+    '%B7': '·',
+    '%7E': '~',
+    '%B0': '°'
   })
   for (const [key, value] of table) {
     out = text.replace(new RegExp(key, 'g'), value)

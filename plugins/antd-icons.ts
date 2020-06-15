@@ -1,1 +1,1 @@
-export { StarOutline } from '@ant-design/icons'
+export { StarOutline, CloseOutline } from '@ant-design/icons'

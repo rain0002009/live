@@ -4,10 +4,9 @@
 
 <script lang="ts">
 import { message } from 'ant-design-vue'
-import { defineComponent, computed, onMounted, ref, onUnmounted } from 'nuxt-composition-api'
-import flvjs from 'flv.js'
+import { defineComponent, onMounted, ref, onUnmounted } from 'nuxt-composition-api'
 
-flvjs.LoggingControl.enableError = true
+const flvPromise = import(/* webpackChunkName: "flvjs" */ 'flv.js')
 
 export default defineComponent({
   name: 'FlvPlayer',
@@ -16,19 +15,23 @@ export default defineComponent({
   },
   setup (props, ctx) {
     const el = ref<HTMLMediaElement>()
-    const flvPlayer = computed(() => {
-      return flvjs.createPlayer({
+    const flvPlayer = ref<any>(null)
+    flvPromise.then((flvModule) => {
+      const flvjs = flvModule.default
+      flvjs.LoggingControl.enableError = true
+      flvPlayer.value = flvjs.createPlayer({
         type: 'flv',
         url: props.src,
         cors: true
       })
-    })
-    flvPlayer.value.on(flvjs.Events.ERROR, (error) => {
-      message.error(error)
-      ctx.emit('error')
+      flvPlayer.value.on(flvjs.Events.ERROR, (error: any) => {
+        message.error(error)
+        ctx.emit('error')
+      })
     })
 
     onMounted(async () => {
+      await flvPromise
       flvPlayer.value.attachMediaElement(el.value as HTMLMediaElement)
       flvPlayer.value.load()
       try {
@@ -43,7 +46,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-
-</style>
