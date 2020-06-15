@@ -38,10 +38,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss">
-.page-favorite-anchor {
-  .platform-name {
-  }
-}
-</style>

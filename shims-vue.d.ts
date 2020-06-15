@@ -23,3 +23,5 @@ declare module 'vant/es/icon' {
   import { Icon } from 'vant'
   export default Icon
 }
+
+declare module 'vue-lazy-hydration'

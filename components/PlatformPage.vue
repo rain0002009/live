@@ -46,13 +46,13 @@
       width="100%"
       @close="onDrawerClose"
     >
-      <client-only>
+      <LazyHydrate when-visible>
         <FlvPlayer
           v-if="data.playerDrawerVisible"
           :src="getVideoSrc(data.selectedItem.address)"
           @error="data.playerDrawerVisible = false"
         />
-      </client-only>
+      </LazyHydrate>
     </a-drawer>
   </div>
 </template>
@@ -60,10 +60,16 @@
 <script lang="ts">
 import path from 'path-browserify'
 import { findIndex } from 'lodash'
+import { message } from 'ant-design-vue'
+import LazyHydrate from 'vue-lazy-hydration'
 import { defineComponent, reactive, ref, watchEffect } from 'nuxt-composition-api'
 import { getAnchorList, AnchorList, Anchor } from '@/api'
 
 export default defineComponent({
+  components: {
+    LazyHydrate,
+    FlvPlayer: () => import('~/components/FlvPlayer.vue')
+  },
   props: {
     list: Array,
     platformName: String
@@ -81,27 +87,32 @@ export default defineComponent({
         return false
       }
       root.$spin.open()
-      const tem = await getAnchorList(root.$axios, root.$route.query.address as string)
-      root.$spin.close()
-      anchorList.value = tem
-        .map((item) => {
-          const garbageAnchorList = root.$store.state.garbageAnchor[props.platformName || root.$route.query.title as string]
-          const currentAnchorList = root.$store.state.favoriteAnchor[props.platformName || root.$route.query.title as string]
-          if (currentAnchorList) {
-            const isFindItem = !!~findIndex(currentAnchorList, ['address', item.address])
-            Reflect.set(item, 'isFavoriteAnchor', isFindItem)
-          } else {
-            Reflect.set(item, 'isFavoriteAnchor', false)
-          }
-          if (garbageAnchorList) {
-            const isFindItem = !!~findIndex(garbageAnchorList, ['address', item.address])
-            if (isFindItem) {
-              item.weight += tem.length
+      try {
+        const tem = await getAnchorList(root.$axios, root.$route.query.address as string)
+        anchorList.value = tem
+          .map((item) => {
+            const garbageAnchorList = root.$store.state.garbageAnchor[props.platformName || root.$route.query.title as string]
+            const currentAnchorList = root.$store.state.favoriteAnchor[props.platformName || root.$route.query.title as string]
+            if (currentAnchorList) {
+              const isFindItem = !!~findIndex(currentAnchorList, ['address', item.address])
+              Reflect.set(item, 'isFavoriteAnchor', isFindItem)
+            } else {
+              Reflect.set(item, 'isFavoriteAnchor', false)
             }
-          }
-          return item
-        })
-        .sort((a, b) => a.weight - b.weight)
+            if (garbageAnchorList) {
+              const isFindItem = !!~findIndex(garbageAnchorList, ['address', item.address])
+              if (isFindItem) {
+                item.weight += tem.length
+              }
+            }
+            return item
+          })
+          .sort((a, b) => a.weight - b.weight)
+      } catch (e) {
+        message.error(e)
+      } finally {
+        root.$spin.close()
+      }
     })
 
     function sortAnchorList () {

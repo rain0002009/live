@@ -39,6 +39,7 @@
 </template>
 
 <script lang="ts">
+import LazyHydrate from 'vue-lazy-hydration'
 import { chunk } from 'lodash'
 import { defineComponent, computed, useAsync, useContext, ref } from 'nuxt-composition-api'
 import { getPlatformInfo, PlatformList } from '@/api'
@@ -46,22 +47,18 @@ import favorite from '@/assets/img/f-favorites.png'
 
 export default defineComponent({
   name: 'Index',
+  components: { LazyHydrate },
   setup () {
     let getPlatformInfoPromise: Promise<PlatformList>
     const { store, $axios } = useContext()
     const data = useAsync(async () => {
-      if (store.state.indexData.length) {
-        return store.state.indexData
-      } else {
-        getPlatformInfoPromise = getPlatformInfo($axios).then((res) => {
-          store.commit('editIndexData', res)
-          if (process.client) {
-            data.value = res
-          }
-          return res
-        })
-        return await getPlatformInfoPromise
-      }
+      getPlatformInfoPromise = getPlatformInfo($axios).then((res) => {
+        if (process.client) {
+          data.value = res
+        }
+        return res
+      })
+      return await getPlatformInfoPromise
     })
     let currentIndex = 0
     const loading = ref(false)

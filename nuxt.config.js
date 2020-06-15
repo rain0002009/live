@@ -52,10 +52,6 @@ export default {
     {
       src: '@/plugins/vuex-local',
       mode: 'client'
-    },
-    {
-      src: '@/plugins/flv',
-      mode: 'client'
     }
   ],
   /*
@@ -106,6 +102,7 @@ export default {
         }
       }
     },
+    extractCSS: true,
     babel: {
       plugins: ['lodash'],
       babelrc: false,
