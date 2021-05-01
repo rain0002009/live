@@ -6,7 +6,17 @@
       title="我的最爱"
       left-arrow
       @click-left="back"
-    />
+    >
+      <template #right>
+        <nuxt-link :to="{name: 'favorite-anchor'}">
+          <a-icon
+            class="text-red-400"
+            type="delete"
+            @click="clear"
+          />
+        </nuxt-link>
+      </template>
+    </van-nav-bar>
     <client-only>
       <template v-if="favoriteAnchor.length">
         <div v-for="[name, value] in favoriteAnchor" :key="name">
@@ -33,8 +43,11 @@ export default defineComponent({
       root.$router.back()
     }
 
+    function clear () {
+      root.$store.commit('clearAnchor')
+    }
     const favoriteAnchor = computed(() => Object.entries(root.$store.state.favoriteAnchor || {}))
-    return { favoriteAnchor, back }
+    return { favoriteAnchor, back, clear }
   }
 })
 </script>

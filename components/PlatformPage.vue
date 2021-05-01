@@ -20,19 +20,19 @@
           <div class="absolute left-0 right-0 control-wrap text-white text-2xl">
             <a-icon
               v-if="!isComponent"
-              class="float-left"
+              class="float-left svg-shadow"
               :class="{'text-red-500': item.weight >= anchorList.length}"
               type="delete"
               @click.stop="addToGarbage(item)"
             />
             <a-icon
-              class="float-right"
+              class="float-right svg-shadow"
               :class="{'text-red-500': item.isFavoriteAnchor}"
               type="star"
               @click.stop="addToFavorite(item)"
             />
           </div>
-          <x-img class="m-auto anchor-avatar w-full" :src="item.img" :lazy="true" />
+          <x-img class="m-auto h-160px object-cover overflow-hidden w-full" :src="item.img" :lazy="true" />
           <figcaption class="text-center text-gray-600 text-sm truncate" v-text="item.title" />
         </figure>
       </a-col>
@@ -202,10 +202,9 @@ export default defineComponent({
 
 <style lang="scss">
   .page-platform-info {
-    .anchor-avatar {
-      height: 160px;
-      object-fit: cover;
-      overflow: hidden;
+
+    .svg-shadow {
+      filter: drop-shadow( 3px 3px 2px rgba(0, 0, 0, .7));
     }
 
     .control-wrap {

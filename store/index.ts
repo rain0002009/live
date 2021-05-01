@@ -41,6 +41,9 @@ function push (which: keyof Pick<State, 'favoriteAnchor' | 'garbageAnchor'>, sta
 export const mutations = {
   pushFavoriteAnchor: partial(push, 'favoriteAnchor'),
   pushGarbageAnchor: partial(push, 'garbageAnchor'),
+  clearAnchor (state: State) {
+    state.favoriteAnchor = {}
+  },
   editSetting (state: State, data: State['setting']) {
     Object.assign(state.setting, data)
   }
