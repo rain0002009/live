@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="mx-auto">
+  <div id="app" class="mx-auto h-100vh max-w-768px">
     <config-provider :local="local">
       <nuxt keep-alive :keep-alive-props="{include: ['Index']}" />
     </config-provider>
@@ -21,10 +21,5 @@ export default {
 <style lang="scss">
   body {
     background-color: #f7f8fa;
-  }
-
-  #app {
-    height: 100vh;
-    max-width: 768px;
   }
 </style>

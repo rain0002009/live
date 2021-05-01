@@ -3,11 +3,23 @@ import webpack from 'webpack'
 import LodashModuleReplacementPlugin from 'lodash-webpack-plugin'
 
 export default {
-  mode: 'universal',
-  purgeCSS: {
-    mode: 'postcss',
-    whitelistPatterns: [/^ant\w*/, /^van-\w*/],
-    whitelistPatternsChildren: [/^ant\w*/, /^van-\w*/]
+  windicss: {
+    scan: {
+      dirs: ['./'],
+      exclude: [
+        '.nuxt/**/*',
+        '*.template.html',
+        // Any classes added in app.html (that have not previously been referenced) will need to be added to the safelist
+        'app.html'
+      ]
+    },
+    transformCSS: false,
+    preflight: {
+      alias: {
+        // add nuxt aliases
+        'nuxt-link': 'a'
+      }
+    }
   },
   /*
   ** Headers of the page
@@ -60,7 +72,7 @@ export default {
   buildModules: [
     '@nuxt/typescript-build',
     'nuxt-composition-api',
-    '@nuxtjs/tailwindcss',
+    'nuxt-windicss',
     '@/plugins/importCss'
   ],
   /*
@@ -104,9 +116,8 @@ export default {
     },
     extractCSS: true,
     babel: {
-      plugins: ['lodash'],
+      plugins: ['lodash', ['@babel/plugin-proposal-private-methods', { loose: true }]],
       babelrc: false,
-      cacheDirectory: undefined,
       presets: ['@nuxt/babel-preset-app']
     },
     /*

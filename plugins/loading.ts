@@ -1,7 +1,7 @@
 import Vue, { PluginObject } from 'vue'
 import Spin from '~/components/Spin.vue'
 
-const SpinConstructor = Vue.extend(Spin)
+const SpinConstructor = Vue.extend(Spin as any)
 
 class Service {
   private instance: any

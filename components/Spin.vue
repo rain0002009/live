@@ -4,14 +4,13 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from 'nuxt-composition-api'
+<script lang="ts">
 import { Spin } from 'ant-design-vue'
 
-export default defineComponent({
+export default {
   name: 'MySpin',
   components: { Spin }
-})
+}
 </script>
 
 <style scoped>
