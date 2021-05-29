@@ -55,10 +55,9 @@ export function getAnchorList (axios: NuxtAxiosInstance, src: string) {
         item.weight = index
         item.isFavoriteAnchor = false
         try {
-          item.title = decodeURIComponent(item.title)
-        } catch {
           item.title = decodeURIComponent(decode(item.title))
-        }
+          item.title = decodeURIComponent(item.title)
+        } catch {}
         return item
       })
   })

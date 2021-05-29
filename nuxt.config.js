@@ -71,7 +71,7 @@ export default {
   */
   buildModules: [
     '@nuxt/typescript-build',
-    'nuxt-composition-api',
+    '@nuxtjs/composition-api/module',
     'nuxt-windicss',
     '@/plugins/importCss'
   ],
@@ -82,6 +82,9 @@ export default {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa'
+  ],
+  serverMiddleware: [
+    '~/server-middleware/api.ts'
   ],
   /*
   ** Axios module configuration

@@ -39,15 +39,13 @@
 </template>
 
 <script lang="ts">
-import LazyHydrate from 'vue-lazy-hydration'
 import { chunk } from 'lodash'
-import { defineComponent, computed, useAsync, useContext, ref } from 'nuxt-composition-api'
+import { defineComponent, computed, useAsync, useContext, ref } from '@nuxtjs/composition-api'
 import { getPlatformInfo, PlatformList } from '@/api'
 import favorite from '@/assets/img/f-favorites.png'
 
 export default defineComponent({
   name: 'Index',
-  components: { LazyHydrate },
   setup () {
     let getPlatformInfoPromise: Promise<PlatformList>
     const { store, $axios } = useContext()

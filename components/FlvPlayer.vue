@@ -4,14 +4,17 @@
 
 <script lang="ts">
 import { message } from 'ant-design-vue'
-import { defineComponent, onMounted, ref, onUnmounted } from 'nuxt-composition-api'
+import { defineComponent, onMounted, onUnmounted, ref } from '@nuxtjs/composition-api'
 
 const flvPromise = import(/* webpackChunkName: "flvjs" */ 'flv.js')
 
 export default defineComponent({
   name: 'FlvPlayer',
   props: {
-    src: String
+    src: {
+      type: String,
+      default: ''
+    }
   },
   setup (props, ctx) {
     const el = ref<HTMLMediaElement>()

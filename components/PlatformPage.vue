@@ -32,6 +32,7 @@
               @click.stop="addToFavorite(item)"
             />
           </div>
+          <CheckStatus :url="item.address" />
           <x-img class="m-auto h-160px object-cover overflow-hidden w-full" :src="item.img" :lazy="true" />
           <figcaption class="text-center text-gray-600 text-sm truncate" v-text="item.title" />
         </figure>
@@ -62,17 +63,27 @@ import path from 'path-browserify'
 import { findIndex } from 'lodash'
 import { message } from 'ant-design-vue'
 import LazyHydrate from 'vue-lazy-hydration'
-import { defineComponent, reactive, ref, watchEffect } from 'nuxt-composition-api'
 import { getAnchorList, AnchorList, Anchor } from '@/api'
+import { defineComponent, reactive, ref, watchEffect } from '@nuxtjs/composition-api'
+import CheckStatus from '~/components/CheckStatus.vue'
 
 export default defineComponent({
   components: {
     LazyHydrate,
+    CheckStatus,
     FlvPlayer: () => import('~/components/FlvPlayer.vue')
   },
   props: {
-    list: Array,
-    platformName: String
+    list: {
+      type: Array,
+      default () {
+        return []
+      }
+    },
+    platformName: {
+      type: String,
+      default: ''
+    }
   },
   setup (props: { list: AnchorList, platformName: string }, { root }) {
     const data = reactive({
@@ -201,32 +212,32 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-  .page-platform-info {
+.page-platform-info {
 
-    .svg-shadow {
-      filter: drop-shadow( 3px 3px 2px rgba(0, 0, 0, .7));
-    }
-
-    .control-wrap {
-      padding: 0 15px;
-
-      .anticon {
-        padding: 10px;
-      }
-    }
+  .svg-shadow {
+    filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, .7));
   }
 
-  .player-drawer {
-    height: 100vh;
+  .control-wrap {
+    padding: 0 15px;
 
-    .ant-drawer-wrapper-body {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .ant-drawer-body {
-      padding: 0;
-      flex: 1;
+    .anticon {
+      padding: 10px;
     }
   }
+}
+
+.player-drawer {
+  height: 100vh;
+
+  .ant-drawer-wrapper-body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ant-drawer-body {
+    padding: 0;
+    flex: 1;
+  }
+}
 </style>

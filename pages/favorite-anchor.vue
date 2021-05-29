@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'nuxt-composition-api'
+import { computed, defineComponent } from '@nuxtjs/composition-api'
 import PlatformPage from '~/components/PlatformPage.vue'
 
 export default defineComponent({
