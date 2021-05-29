@@ -15,7 +15,6 @@
     "@nuxt/typescript-runtime": "^2.1.0",
     "@nuxtjs/axios": "^5.13.1",
     "@nuxtjs/pwa": "^3.3.5",
-    "@nuxtjs/tailwindcss": "^4.0.3",
     "ant-design-vue": "^1.7.4",
     "flv.js": "^1.5.0",
     "lodash": "^4.17.19",
