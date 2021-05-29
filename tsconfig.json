@@ -27,7 +27,9 @@
       "@types/node",
       "@nuxt/types",
       "@nuxtjs/axios",
-      "@types/fluent-ffmpeg"
+      "@types/fluent-ffmpeg",
+      "@types/node-cron",
+      "@types/glob"
     ]
   },
   "exclude": [
