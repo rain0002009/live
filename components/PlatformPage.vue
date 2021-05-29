@@ -77,7 +77,7 @@ export default defineComponent({
     list: {
       type: Array,
       default () {
-        return []
+        return null
       }
     },
     platformName: {
@@ -85,7 +85,7 @@ export default defineComponent({
       default: ''
     }
   },
-  setup (props: { list: AnchorList, platformName: string }, { root }) {
+  setup (props: { list: AnchorList, platformName: string }, { root }: any) {
     const data = reactive({
       playerDrawerVisible: false,
       selectedItem: {}
