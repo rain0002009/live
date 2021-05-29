@@ -5,7 +5,7 @@
       pending: 'bg-yellow-500',
       done: 'bg-green-500',
       error: 'bg-red-500'
-    }[innerData.status] , 'w-10px h-10px rounded-100px absolute ml-2px']"
+    }[innerData.status] , 'w-10px h-10px rounded-100px absolute ml-2px shadow']"
   />
 </template>
 
@@ -21,7 +21,8 @@ export default defineComponent({
       default: ''
     }
   },
-  setup (props, { root }) {
+  emits: ['success'],
+  setup (props, { root, emit }) {
     const current = ref<HTMLDivElement | null>(null)
     const source = root.$axios.CancelToken.source()
     const io = ref(new IntersectionObserver((entries) => {
@@ -42,6 +43,7 @@ export default defineComponent({
           cancelToken: source.token
         })
         innerData.status = data.status === 200 ? 'done' : 'error'
+        emit('success', data)
       } catch {
         innerData.status = 'error'
       }

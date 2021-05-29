@@ -6,7 +6,7 @@ import 'vant/es/icon/index.less'
 import 'vant/es/nav-bar/index.less'
 import 'vant/es/list/index.less'
 
-Vue.component('x-img', XImg)
+Vue.component('XImg', XImg)
 Vue.component(Icon.name, Icon)
 Vue.component(NavBar.name, NavBar)
 Vue.component(List.name, List)

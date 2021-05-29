@@ -1,62 +1,80 @@
 <template>
-  <img :src="imgSrc" :alt="alt">
+  <img ref="ref" :src="innerData.imgSrc" :alt="alt">
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
 import img404 from '@/assets/img/404.png'
+import { defineComponent, onMounted, reactive, ref, watchEffect } from '@nuxtjs/composition-api'
+import { onBeforeUnmount } from '@vue/composition-api'
 
-@Component
-export default class XImg extends Vue {
-  imgObserver = this.$isServer ? null : new IntersectionObserver(this.handleImgObserve)
-  imgSrc: string | null | undefined = img404
-  @Prop(String) readonly src: string | undefined
-  @Prop(Boolean) readonly lazy: boolean | undefined
+export default defineComponent({
+  name: 'XImg',
+  props: {
+    src: {
+      type: String,
+      default: undefined
+    },
+    alt: {
+      type: String || undefined,
+      default: undefined
+    }
+  },
+  setup (props, { root }) {
+    const current = ref<HTMLImageElement>()
+    const innerData = reactive({
+      imgSrc: img404,
+      visible: false,
+      preSuccessSrc: img404
+    })
 
-  @Watch('src', { immediate: true })
-  onSrcChange (val: string) {
-    if (val && !this.lazy) {
-      this.setImgSrc(val)
+    const checkUrl = function (src: string): Promise<string> {
+      return new Promise((resolve) => {
+        const dom = new Image()
+        dom.src = src
+        dom.onload = function () {
+          if (dom.width > 1) {
+            innerData.preSuccessSrc = src
+            resolve(src)
+          } else {
+            resolve(innerData.preSuccessSrc)
+          }
+        }
+        dom.onerror = function () {
+          resolve(innerData.preSuccessSrc)
+        }
+      })
+    }
+
+    const io = ref(!root.$isServer
+      ? new IntersectionObserver((entries) => {
+        const currentNode = entries[0]
+        if (currentNode.intersectionRatio > 0) {
+          innerData.visible = true
+        }
+      })
+      : null)
+
+    watchEffect(async () => {
+      if (innerData.visible && props.src) {
+        innerData.imgSrc = await checkUrl(props.src)
+      }
+    })
+
+    onMounted(() => {
+      io.value?.observe(current.value!)
+    })
+
+    onBeforeUnmount(() => {
+      io.value?.unobserve(current.value!)
+    })
+
+    return {
+      innerData,
+      ref: current
     }
   }
+})
 
-  @Prop(String) readonly alt: string | undefined
-
-  handleImgObserve (entries: IntersectionObserverEntry[]) {
-    const entry = entries[0]
-    if (this.imgObserver && entry.intersectionRatio > 0) {
-      this.setImgSrc(this.src)
-      this.imgObserver.unobserve(this.$el)
-    }
-  }
-
-  handleLoadError () {
-    this.imgSrc = img404
-  }
-
-  setImgSrc (val: string | undefined) {
-    if (this.$isServer) {
-      this.imgSrc = val
-      return false
-    }
-    let img: HTMLImageElement | undefined | null = new Image()
-    img.src = val || ''
-    img.onload = () => {
-      this.imgSrc = val
-      img = null
-    }
-    img.onerror = () => {
-      this.imgSrc = img404
-      img = null
-    }
-  }
-
-  mounted () {
-    if (this.lazy && this.imgObserver) {
-      this.imgObserver.observe(this.$el)
-    }
-  }
-}
 </script>
 
 <style lang="scss">

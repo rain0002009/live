@@ -15,13 +15,13 @@
       </template>
     </van-nav-bar>
     <a-row>
-      <a-col v-for="item in anchorList" :key="item.address" :span="12" @click="start(item)">
+      <a-col v-for="item in data.anchorList" :key="item.address" :span="12" @click="start(item)">
         <figure class="p-3 relative">
           <div class="absolute left-0 right-0 control-wrap text-white text-2xl">
             <a-icon
               v-if="!isComponent"
               class="float-left svg-shadow"
-              :class="{'text-red-500': item.weight >= anchorList.length}"
+              :class="{'text-red-500': item.weight >= data.anchorList.length}"
               type="delete"
               @click.stop="addToGarbage(item)"
             />
@@ -32,8 +32,11 @@
               @click.stop="addToFavorite(item)"
             />
           </div>
-          <CheckStatus :url="item.address" />
-          <x-img class="m-auto h-160px object-cover overflow-hidden w-full" :src="item.img" :lazy="true" />
+          <CheckStatus
+            :url="item.address"
+            @success="(data) => {onStatusChange(data, item)}"
+          />
+          <XImg class="m-auto h-160px object-cover overflow-hidden w-full" :src="item.img" />
           <figcaption class="text-center text-gray-600 text-sm truncate" v-text="item.title" />
         </figure>
       </a-col>
@@ -64,7 +67,7 @@ import { findIndex } from 'lodash'
 import { message } from 'ant-design-vue'
 import LazyHydrate from 'vue-lazy-hydration'
 import { getAnchorList, AnchorList, Anchor } from '@/api'
-import { defineComponent, reactive, ref, watchEffect } from '@nuxtjs/composition-api'
+import { defineComponent, reactive, watchEffect } from '@nuxtjs/composition-api'
 import CheckStatus from '~/components/CheckStatus.vue'
 
 export default defineComponent({
@@ -88,19 +91,19 @@ export default defineComponent({
   setup (props: { list: AnchorList, platformName: string }, { root }: any) {
     const data = reactive({
       playerDrawerVisible: false,
-      selectedItem: {}
+      selectedItem: {},
+      anchorList: ([] as AnchorList)
     })
 
-    const anchorList = ref<AnchorList>()
     watchEffect(async () => {
       if (props.list) {
-        anchorList.value = props.list
+        data.anchorList = props.list
         return false
       }
       root.$spin.open()
       try {
         const tem = await getAnchorList(root.$axios, root.$route.query.address as string)
-        anchorList.value = tem
+        data.anchorList = tem
           .map((item) => {
             const garbageAnchorList = root.$store.state.garbageAnchor[props.platformName || root.$route.query.title as string]
             const currentAnchorList = root.$store.state.favoriteAnchor[props.platformName || root.$route.query.title as string]
@@ -127,7 +130,7 @@ export default defineComponent({
     })
 
     function sortAnchorList () {
-      anchorList.value?.sort((a, b) => {
+      data.anchorList?.sort((a, b) => {
         return a.weight - b.weight
       })
     }
@@ -180,7 +183,7 @@ export default defineComponent({
 
     function addToGarbage (item: Anchor) {
       const platform = root.$route.query.title as string || props.platformName
-      const listLength = (anchorList.value?.length || 0)
+      const listLength = (data.anchorList?.length || 0)
       if (!props.list) {
         if (item.weight >= listLength) {
           item.weight -= listLength
@@ -195,8 +198,11 @@ export default defineComponent({
       sortAnchorList()
     }
 
+    function onStatusChange (data: any, item: any) {
+      item.img = data.file
+    }
+
     return {
-      anchorList,
       data,
       start,
       onDrawerClose,
@@ -204,6 +210,7 @@ export default defineComponent({
       back,
       addToFavorite,
       addToGarbage,
+      onStatusChange,
       query: root.$route.query,
       isComponent: !!props.list
     }
